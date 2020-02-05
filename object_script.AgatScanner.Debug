@@ -1,0 +1,15 @@
+INPUT(
+./debug\main.o
+./debug\mainwindow.o
+./debug\sg_comport.o
+./debug\agat.o
+./debug\agatsetting.o
+./debug\cgraphwindow.o
+./debug\qcustomplot.o
+./debug\qrc_icons.o
+./debug\moc_mainwindow.o
+./debug\moc_sg_comport.o
+./debug\moc_agatsetting.o
+./debug\moc_cgraphwindow.o
+./debug\moc_qcustomplot.o
+);
