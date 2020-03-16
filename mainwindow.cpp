@@ -94,7 +94,7 @@ void MainWindow::initSerial()
     com = new SgComPort();
 }
 
-//
+/*
 // Example: pack from KORAL
 // 1F 1A 33 24 01 FA 35 2F 55
 // 1F 33 1A 24 01 41 9F 99 9A 00 00 00 00 00 00 00 00 00 00 00 15 E5 2F 55
@@ -112,6 +112,7 @@ void MainWindow::initSerial()
 // crc: 15 E5
 // eof: 2F
 // stop: 55
+*/
 
 void MainWindow::on_pbSave_clicked()
 {
@@ -208,10 +209,10 @@ void MainWindow::sending()
 //дополнить запрос заголовком, окончанием и двойными и символами
         cKoral::combineAnswer(request);
         MainWindow::serialSend(request);
-        logOutStr += QString("%1 - <font color = ""grey"">%2 </font><font color = ""green"">[Запрос адреса %3]</font>")
+        logOutStr += QString("%1 - <font color = ""grey"">%2 </font><font color = ""green"">[Запрос датчика №%3]</font>")
                 .arg(QTime::currentTime().toString("HH:mm:ss.zzz"))
                 .arg(static_cast<QString>(request.toHex()).toUpper())
-                .arg(QString::number(scanningCount).toUpper());
+                .arg(QString::number(scanningCount+1).toUpper());
         if(ui->groupBox->isChecked()) ui->teInputData->append(logOutStr);
         ++scanningCount;
     }
@@ -220,7 +221,7 @@ void MainWindow::sending()
         request.append(scanningCount).append(0x33).append(0x24).append(0x01);
         cKoral::combineAnswer(request);
         MainWindow::serialSend(request);
-        logOutStr += QString("%1 - <font color = ""grey"">%2 </font><font color = ""green"">[Запрос адреса %3]</font>")
+        logOutStr += QString("%1 - <font color = ""grey"">%2 </font><font color = ""green"">[Запрос датчика %3]</font>")
                 .arg(QTime::currentTime().toString("HH:mm:ss.zzz"))
                 .arg(static_cast<QString>(request.toHex()).toUpper())
                 .arg(QString::number(scanningCount).toUpper());
@@ -283,6 +284,7 @@ void MainWindow::serialReceive(QByteArray pck)
                         logOutStr += QString("<font color = ""red"">. Calculated: <b>%1</b></font>").arg(QString::number(((koralpack.getCRC()&0xFF)<<8) | (koralpack.getCRC()>>8), 16).toUpper());
                     ui->teInputData->append(logOutStr);
                 }
+                pack = onePack + pack;
                 return;
             }
         };
