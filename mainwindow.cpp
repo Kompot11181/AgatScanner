@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #define PROGRAM_NAME "AGAT-Scanner"
-#define VERSION_NAME "v.0.7"
+#define VERSION_NAME "v.0.8"
 #define PROG_DATE __DATE__
 #define PROG_TIME  __TIME__
 

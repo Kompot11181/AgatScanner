@@ -16,7 +16,7 @@
 namespace agatConst{
     constexpr char maxAgatNum = 32;     // максимальное количество датчиков в системе (максимальный номер датчика)
 
-    constexpr int maxChnls = 6;         // максимальное кол-во каналов в ответе
+    constexpr int maxChnls = 10;        // максимальное кол-во каналов в ответе
     constexpr int bytesPerChnl = 4;     // кол-во байт на канал (float)
 
     constexpr char SOT = '\x1F';        // Start Of Transaction
@@ -131,6 +131,7 @@ enum tSensorType
     VibroType,
     KRUType,
     KorallPlusType,
+    BKSType,
     UnknownType,
     NumOfTypes
 };

@@ -39,12 +39,14 @@ void cGraphWindow::addValue(QString val)
     bool ok;
     if(val.contains("0x"))
     {
-        int value = val.right(val.lastIndexOf('x')).toInt(&ok, 16);
+        int value = val.mid(val.lastIndexOf('x') + 1).toInt(&ok, 16);
         _graphic->addData(QTime::currentTime().msecsSinceStartOfDay()/1000.0, value);
+        ui->lValue->setText(val + " (" +QString::number(value) + ")");
     }
     else {
         float value = val.toFloat(&ok);
         _graphic->addData(QTime::currentTime().msecsSinceStartOfDay()/1000.0, value);
+        ui->lValue->setText(val);
     }
     if(!_graphic->selected()) {
         bool ok;
@@ -52,7 +54,6 @@ void cGraphWindow::addValue(QString val)
         _plot->yAxis->setRange(_graphic->getValueRange(ok));
         _plot->rescaleAxes();
     }
-    ui->lValue->setText(val);
     _plot->replot();
     this->repaint();
 }

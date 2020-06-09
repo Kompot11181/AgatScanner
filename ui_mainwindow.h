@@ -193,7 +193,7 @@ public:
         scrollArea->setObjectName(QStringLiteral("scrollArea"));
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setLineWidth(0);
-        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));

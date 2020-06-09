@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_cAgatSetting_t {
-    QByteArrayData data[16];
-    char stringdata0[160];
+    QByteArrayData data[18];
+    char stringdata0[179];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -34,24 +34,26 @@ QT_MOC_LITERAL(1, 13, 11), // "loopChanged"
 QT_MOC_LITERAL(2, 25, 0), // ""
 QT_MOC_LITERAL(3, 26, 7), // "setType"
 QT_MOC_LITERAL(4, 34, 4), // "type"
-QT_MOC_LITERAL(5, 39, 7), // "setAddr"
-QT_MOC_LITERAL(6, 47, 3), // "adr"
-QT_MOC_LITERAL(7, 51, 7), // "setLoop"
-QT_MOC_LITERAL(8, 59, 6), // "looped"
-QT_MOC_LITERAL(9, 66, 7), // "setData"
-QT_MOC_LITERAL(10, 74, 11), // "QByteArray&"
-QT_MOC_LITERAL(11, 86, 4), // "data"
-QT_MOC_LITERAL(12, 91, 12), // "updateValues"
-QT_MOC_LITERAL(13, 104, 15), // "restorFromBlink"
-QT_MOC_LITERAL(14, 120, 29), // "on_CustomContextMenuRequested"
-QT_MOC_LITERAL(15, 150, 9) // "showGraph"
+QT_MOC_LITERAL(5, 39, 14), // "setTypeWithLen"
+QT_MOC_LITERAL(6, 54, 3), // "num"
+QT_MOC_LITERAL(7, 58, 7), // "setAddr"
+QT_MOC_LITERAL(8, 66, 3), // "adr"
+QT_MOC_LITERAL(9, 70, 7), // "setLoop"
+QT_MOC_LITERAL(10, 78, 6), // "looped"
+QT_MOC_LITERAL(11, 85, 7), // "setData"
+QT_MOC_LITERAL(12, 93, 11), // "QByteArray&"
+QT_MOC_LITERAL(13, 105, 4), // "data"
+QT_MOC_LITERAL(14, 110, 12), // "updateValues"
+QT_MOC_LITERAL(15, 123, 15), // "restorFromBlink"
+QT_MOC_LITERAL(16, 139, 29), // "on_CustomContextMenuRequested"
+QT_MOC_LITERAL(17, 169, 9) // "showGraph"
 
     },
     "cAgatSetting\0loopChanged\0\0setType\0"
-    "type\0setAddr\0adr\0setLoop\0looped\0setData\0"
-    "QByteArray&\0data\0updateValues\0"
-    "restorFromBlink\0on_CustomContextMenuRequested\0"
-    "showGraph"
+    "type\0setTypeWithLen\0num\0setAddr\0adr\0"
+    "setLoop\0looped\0setData\0QByteArray&\0"
+    "data\0updateValues\0restorFromBlink\0"
+    "on_CustomContextMenuRequested\0showGraph"
 };
 #undef QT_MOC_LITERAL
 
@@ -61,7 +63,7 @@ static const uint qt_meta_data_cAgatSetting[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -69,28 +71,30 @@ static const uint qt_meta_data_cAgatSetting[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   64,    2, 0x06 /* Public */,
+       1,    1,   69,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       3,    1,   67,    2, 0x0a /* Public */,
-       5,    1,   70,    2, 0x0a /* Public */,
-       7,    1,   73,    2, 0x0a /* Public */,
-       7,    0,   76,    2, 0x0a /* Public */,
-       9,    1,   77,    2, 0x0a /* Public */,
-      12,    0,   80,    2, 0x0a /* Public */,
-      13,    0,   81,    2, 0x0a /* Public */,
-      14,    1,   82,    2, 0x08 /* Private */,
-      15,    0,   85,    2, 0x08 /* Private */,
+       3,    1,   72,    2, 0x0a /* Public */,
+       5,    2,   75,    2, 0x0a /* Public */,
+       7,    1,   80,    2, 0x0a /* Public */,
+       9,    1,   83,    2, 0x0a /* Public */,
+       9,    0,   86,    2, 0x0a /* Public */,
+      11,    1,   87,    2, 0x0a /* Public */,
+      14,    0,   90,    2, 0x0a /* Public */,
+      15,    0,   91,    2, 0x0a /* Public */,
+      16,    1,   92,    2, 0x08 /* Private */,
+      17,    0,   95,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Bool,    2,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int,    4,
-    QMetaType::Void, QMetaType::Int,    6,
-    QMetaType::Void, QMetaType::Bool,    8,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int,    4,    6,
+    QMetaType::Void, QMetaType::Int,    8,
+    QMetaType::Void, QMetaType::Bool,   10,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 10,   11,
+    QMetaType::Void, 0x80000000 | 12,   13,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QPoint,    2,
@@ -107,14 +111,15 @@ void cAgatSetting::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         switch (_id) {
         case 0: _t->loopChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 1: _t->setType((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 2: _t->setAddr((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 3: _t->setLoop((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 4: _t->setLoop(); break;
-        case 5: _t->setData((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
-        case 6: _t->updateValues(); break;
-        case 7: _t->restorFromBlink(); break;
-        case 8: _t->on_CustomContextMenuRequested((*reinterpret_cast< QPoint(*)>(_a[1]))); break;
-        case 9: _t->showGraph(); break;
+        case 2: _t->setTypeWithLen((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 3: _t->setAddr((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 4: _t->setLoop((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 5: _t->setLoop(); break;
+        case 6: _t->setData((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 7: _t->updateValues(); break;
+        case 8: _t->restorFromBlink(); break;
+        case 9: _t->on_CustomContextMenuRequested((*reinterpret_cast< QPoint(*)>(_a[1]))); break;
+        case 10: _t->showGraph(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -154,13 +159,13 @@ int cAgatSetting::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 11;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 11)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 10;
+        _id -= 11;
     }
     return _id;
 }

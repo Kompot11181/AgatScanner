@@ -3310,6 +3310,8 @@ debug/sg_comport.o: sg_comport.cpp sg_comport.h \
 		C:/Qt/5.5/mingw492_32/include/QtCore/qcontiguouscache.h \
 		C:/Qt/5.5/mingw492_32/include/QtCore/QException \
 		C:/Qt/5.5/mingw492_32/include/QtCore/qexception.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QProcess \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qprocess.h \
 		C:/Qt/5.5/mingw492_32/include/QtSerialPort/QSerialPortInfo \
 		C:/Qt/5.5/mingw492_32/include/QtSerialPort/qserialportinfo.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\sg_comport.o sg_comport.cpp
@@ -4369,6 +4371,7 @@ debug/cgraphwindow.o: cgraphwindow.cpp cgraphwindow.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QHBoxLayout \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QHeaderView \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QLabel \
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/QLineEdit \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QVBoxLayout
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\cgraphwindow.o cgraphwindow.cpp
 
