@@ -50,6 +50,16 @@ private slots:
 
     void on_spinBox_valueChanged(int arg1);
 
+    void on_leOutputData_textEdited(const QString &arg1);
+
+    void on_pbCalcCRC_clicked();
+
+    void on_pbSend_clicked();
+
+    void contextMenuRequested(QPoint);
+
+    void copyFromOutputData();
+
 protected slots:
 //    virtual void keyPressEvent(QKeyEvent *event);
 
@@ -57,8 +67,9 @@ private:
     Ui::MainWindow *ui;
     SgComPort *com;
     QTimer timer;
-    unsigned char scanningCount;
-    bool loop_mode;
+    unsigned int scanningCount;
+    bool loop_mode;                 // флаг режима циклического опроса определённых датчиков
+    bool send_user_pack;            // флаг необходимости послыки введённого пользотелей запроса
     void initSerial();
 };
 #endif // MAINWINDOW_H

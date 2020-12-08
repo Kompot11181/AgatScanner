@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #define PROGRAM_NAME "AGAT-Scanner"
-#define VERSION_NAME "v.0.8"
+#define VERSION_NAME "v.0.9"
 #define PROG_DATE __DATE__
 #define PROG_TIME  __TIME__
 
@@ -17,13 +17,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QPixmap imageAgat(":/Agat_big_grey.png");
+    QPixmap imageAgat(":/images/Agat_big_grey.png");
     ui->pbLoad->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
     ui->pbSave->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
     ui->pbLoad->setEnabled(false); ui->pbLoad->setVisible(false);
     ui->pbSave->setEnabled(false); ui->pbSave->setVisible(false);
 //    ui->pbScan->setIcon(style()->standardIcon(QStyle::SP_FileDialogDetailedView));
-    ui->pbScan->setIcon(QIcon(":/search.ico")); ui->pbScan->setFixedSize(125,25);
+    ui->pbScan->setIcon(QIcon(":/images/search.ico")); ui->pbScan->setFixedSize(125,25);
     ui->pbStart->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     ui->pbStop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
 
@@ -33,13 +33,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QLabel * L = new QLabel();
     L->setFixedSize(25,10);
     L->setStatusTip("mailto: chosen_i@inbox.ru");
-    QPixmap imageJK(":/jk.png");
+    QPixmap imageJK(":/images/jk.png");
     setWindowTitle(windowTitle() + " " + VERSION_NAME);
     imageJK.setMask(imageJK.createMaskFromColor(QColor(255,255,255),Qt::MaskInColor));
     L->setPixmap(imageJK.scaled(L->size(),Qt::KeepAspectRatio, Qt::FastTransformation));
     ui->statusBar->insertPermanentWidget(0, L);
-
-
 
     ui->teInputData->document()->setMaximumBlockCount(0); // максимальное кол-во строк в логе
 
@@ -56,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     sp->addWidget(ui->groupBox);
     ui->vCentralLayout->addWidget(sp);
 
-    ui->pbClear->setIcon(style()->standardIcon(QStyle::SP_LineEditClearButton));
+    //ui->pbClear->setIcon(style()->standardIcon(QStyle::SP_LineEditClearButton));
     ui->pbClear->setText("");
     ui->pbClear->setParent(ui->teInputData);
     QHBoxLayout *hblInputData = new QHBoxLayout();  //ui->teInputData);
@@ -76,12 +74,16 @@ MainWindow::MainWindow(QWidget *parent) :
     // создать подключение (но не подключиться)
     this->initSerial();
     // начальная инициализация (режим ожидания сканирования)
-    loop_mode = false;
+    loop_mode = false; send_user_pack = false;
     ui->groupBoxKorals->setEnabled(false);
     // привязать таймер к процедуре опроса
     connect(&timer, SIGNAL(timeout()), this, SLOT(sending()));
     // если данные получены, обработать
     connect(com, &SgComPort::packRecieved, this, &MainWindow::serialReceive);
+    // если посылку поменяли (нажатие Enter), пересчитать индексы
+    connect(ui->leOutputData, SIGNAL(returnPressed()),this, SLOT(on_pbCalcCRC_clicked()));
+    // вызов контекстного меню
+    connect(ui->leOutputData, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequested(QPoint)));
 }
 
 MainWindow::~MainWindow()
@@ -93,26 +95,6 @@ void MainWindow::initSerial()
 {
     com = new SgComPort();
 }
-
-/*
-// Example: pack from KORAL
-// 1F 1A 33 24 01 FA 35 2F 55
-// 1F 33 1A 24 01 41 9F 99 9A 00 00 00 00 00 00 00 00 00 00 00 15 E5 2F 55
-// start: 0x1F
-// dst: 0x33 // server
-// src: 0x1A // koral
-// space: 0x24
-// cmd: 0x01
-// data0 (19.95): 41 9F 99 9A
-// data1 (0.0): 00 00 00 00
-// data2 (0.0): 00 00 00 00 00
-// error: 0x00
-// status: 0x00
-// emty byte: 0x00
-// crc: 15 E5
-// eof: 2F
-// stop: 55
-*/
 
 void MainWindow::on_pbSave_clicked()
 {
@@ -144,6 +126,7 @@ void MainWindow::on_pbStart_clicked()
     scanningCount = 0;                          // с начала цикла
     timer.start();                              // начать опрос
     ui->pbScan->setEnabled(false);
+    ui->pbSend->setEnabled(false);
 }
 
 void MainWindow::on_pbStop_clicked()
@@ -171,6 +154,7 @@ void MainWindow::sending()
             ui->statusBar->showMessage("Ошибка открытия порта", 2000);
             timer.stop();
             ui->pbScan->setEnabled(true);
+            ui->pbSend->setEnabled(true);
             ui->groupBoxKorals->setEnabled(false);
             return;
         }
@@ -207,7 +191,7 @@ void MainWindow::sending()
             request.append(0x06);
         else request.append(0x01);
 //дополнить запрос заголовком, окончанием и двойными и символами
-        cKoral::combineAnswer(request);
+        AvroraSensor::combineAnswer(request);
         MainWindow::serialSend(request);
         logOutStr += QString("%1 - <font color = ""grey"">%2 </font><font color = ""green"">[Запрос датчика №%3]</font>")
                 .arg(QTime::currentTime().toString("HH:mm:ss.zzz"))
@@ -216,31 +200,60 @@ void MainWindow::sending()
         if(ui->groupBox->isChecked()) ui->teInputData->append(logOutStr);
         ++scanningCount;
     }
-    else
-    if (++scanningCount <= agatConst::maxAgatNum) {
+    else if(send_user_pack) {
+        send_user_pack = false;
+        QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
+        QByteArray str = codec->fromUnicode(ui->leOutputData->placeholderText());
+        if (str.length() == 0) str = codec->fromUnicode(ui->leOutputData->text());
+    // для БСК/Коралла/Кру работает на скорости 57600, 8N1.
+        QByteArray hex = QByteArray::fromHex(str);
+        QString logOutStr =  hex.toHex().toUpper();
+        ui->statusBar->showMessage("Отправка пакета: " + logOutStr, 1000);
+        if(ui->groupBox->isChecked()) {
+            if(logOutStr.length() >= 10) {
+                logOutStr = QString("%1 - <font color = ""green"">Отправка: %2 <b>%3</b> %4</font>")
+                                        .arg(QTime::currentTime().toString("HH:mm:ss.zzz "))
+                                        .arg(logOutStr.left(2))
+                                        .arg(logOutStr.mid(2, logOutStr.length() - 10))
+                                        .arg(logOutStr.right(8));
+
+            } else {
+                logOutStr = QString("%1 - <font color = ""green"">Отправка: %2 </font>")
+                                        .arg(QTime::currentTime().toString("HH:mm:ss.zzz "))
+                                        .arg(logOutStr);
+            }
+            ui->teInputData->append(logOutStr);
+        }
+        MainWindow::serialSend(hex);
+        timer.singleShot(ui->spinBox->value(), Qt::PreciseTimer, this, SLOT(sending()));
+//        MainWindow::sending();
+    }
+    else if (++scanningCount <= agatConst::maxAgatNum) {
         request.append(scanningCount).append(0x33).append(0x24).append(0x01);
-        cKoral::combineAnswer(request);
+        AvroraSensor::combineAnswer(request);
         MainWindow::serialSend(request);
         logOutStr += QString("%1 - <font color = ""grey"">%2 </font><font color = ""green"">[Запрос датчика %3]</font>")
                 .arg(QTime::currentTime().toString("HH:mm:ss.zzz"))
                 .arg(static_cast<QString>(request.toHex()).toUpper())
                 .arg(QString::number(scanningCount).toUpper());
-        if(ui->groupBox->isChecked()) ui->teInputData->append(logOutStr);
-    }
-    else {
-        if(com->isOpened()) {
-            com->close();
-            if(ui->groupBox->isChecked()) ui->teInputData->append("<font color=""black"">Порт закрыт</font>");
-            ui->statusBar->showMessage("Порт закрыт", 2000);
-            qDebug() << "Close port";
-            if(agat_list.length()) {
-                ui->groupBoxKorals->setEnabled(true);
-                ui->pbScan->setEnabled(true);
+        if (ui->groupBox->isChecked()) ui->teInputData->append(logOutStr);
+        ui->statusBar->showMessage(QString("Сканирование %1 / %2 ").arg(scanningCount).arg((uint)agatConst::maxAgatNum), 1000);
+        } else {
+            if(com->isOpened()) {
+                com->close();
+                if(ui->groupBox->isChecked()) ui->teInputData->append("<font color=""black"">Порт закрыт</font>");
+                ui->statusBar->showMessage("Порт закрыт", 2000);
+                qDebug() << "Close port";
+                if(agat_list.length()) {
+                    ui->groupBoxKorals->setEnabled(true);
+                    ui->pbScan->setEnabled(true);
+                    ui->pbSend->setEnabled(true);
+                }
             }
+            timer.stop();
+            ui->pbScan->setEnabled(true);
+            ui->pbSend->setEnabled(true);
         }
-        timer.stop();
-        ui->pbScan->setEnabled(true);
-    }
 }
 
 
@@ -265,7 +278,7 @@ void MainWindow::serialReceive(QByteArray pck)
         // уменьшить буфер
         pack = pack.right(pack.length() - pack.indexOf(agatConst::STT) - 1);
         // попытаться расшифровать
-        cKoral koralpack;
+        AvroraSensor koralpack;
         // до тех пор пока не получится расшифровать правильно
         while(!koralpack.updateCMDPack(onePack)){
             // добавить ещё хвост пакета до символа конца (вдруг STT попался в середине пакета)
@@ -303,7 +316,7 @@ void MainWindow::serialReceive(QByteArray pck)
         onePack = onePack.mid(agatConst::posDAT, onePack.length() - agatConst::posDAT + agatConst::posEndDat);
         logOutStr += QString(" - <font color = ""green"">[%1 Байт; Адрес: %2; Данные: %3]</font>")
                 .arg(onePack.length())
-                .arg(QString::number(koralpack.getSrc(), 16).toUpper())
+                .arg(QString::number(static_cast<uint>(koralpack.getSrc() & 0x0FF), 16).toUpper())
                 .arg(static_cast<QString>(onePack.toHex()).toUpper());
         // если датчик не в списке
         if (koral_in_list == -1)
@@ -359,4 +372,86 @@ void MainWindow::on_cbCommonLoop_released()
 void MainWindow::on_spinBox_valueChanged(int val)
 {
     timer.setInterval(val);
+}
+
+void MainWindow::on_leOutputData_textEdited(const QString &arg1)
+{
+    ui->leOutputData->setPlaceholderText("");
+    if(arg1 == "")
+    {
+        ui->pbCalcCRC->setEnabled(false);
+    }
+    else
+    {
+        ui->pbCalcCRC->setEnabled(true);
+    }
+}
+
+void MainWindow::on_pbCalcCRC_clicked()
+{
+    QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
+    QByteArray pck = codec->fromUnicode(ui->leOutputData->text());
+    pck = QByteArray::fromHex(pck);
+
+    AvroraSensor::combineAnswer(pck);
+
+    QString strholder = pck.toHex().toUpper();
+    for (int i = strholder.length()-2; i > 1; i-=2)
+        strholder.insert(i, ' ');
+    ui->leOutputData->setPlaceholderText(strholder);
+    ui->leOutputData->setText("");
+    ui->pbCalcCRC->setEnabled(false);
+}
+
+void MainWindow::on_pbSend_clicked()
+{
+    send_user_pack = true;
+    MainWindow::sending();
+}
+
+void MainWindow::contextMenuRequested(QPoint point)
+{
+    // объявление и инициализация конеткстного меню
+    QMenu * menu = ui->leOutputData->createStandardContextMenu(); //new QMenu(ui->leOutputData->window());
+    // создание нового действия
+    QAction * act_copy = new QAction(QIcon(":/images/copy.png"), tr("Копировать"), menu->parent());
+    // описание сочетания клавиш (только лишь?)
+    act_copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+    // соединение действия с функцией копирования в буфер обмена
+    connect (act_copy, SIGNAL(triggered()), this, SLOT(copyFromOutputData()));
+    // удалить "Cut"
+    menu->removeAction(menu->actions().at(3));
+    // удалить "Copy"
+    menu->removeAction(menu->actions().at(3));
+    // добавить действие в меню
+    menu->insertAction(menu->actions().at(3), act_copy);
+    // с учётом того, есть ли данные для копирования или нет
+    if((ui->leOutputData->text() == "") && (ui->leOutputData->placeholderText() == ""))
+    {
+        act_copy->setEnabled(false);
+    }
+    else
+    {
+        act_copy->setEnabled(true);
+    }
+    // вывести контекстное меню
+    menu->popup(ui->leOutputData->mapToGlobal(point));
+}
+
+void MainWindow::copyFromOutputData()
+{
+    QClipboard * clipboard = QApplication::clipboard();
+    if(ui->leOutputData->text() == "")
+    {
+        if(ui->leOutputData->placeholderText() != "")
+        {
+            clipboard->setText(ui->leOutputData->placeholderText());
+            ui->statusBar->showMessage("Скопировано в буфер обмена: " + clipboard->text(), 1000);
+        }
+    }
+    else
+    {
+        clipboard->setText(ui->leOutputData->text());
+            ui->statusBar->showMessage("Скопировано в буфер обмена: " + clipboard->text(), 1000);
+    }
 }

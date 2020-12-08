@@ -1,12 +1,12 @@
 #include "agat.h"
 
-cKoral::cKoral()
+AvroraSensor::AvroraSensor()
 {
 
 }
 
 // clear pack; pack = 0
-void cKoral::clear()
+void AvroraSensor::clear()
 {
     _pack.startByte = 0; _packCMD.startByte = 0;
     _pack.srcByte = 0;   _packCMD.srcByte = 0;
@@ -24,7 +24,7 @@ void cKoral::clear()
 }
 
 
-bool cKoral::updateCMDPack(QByteArray &pck)
+bool AvroraSensor::updateCMDPack(QByteArray &pck)
 {
     using namespace agatConst;
     clear();
@@ -88,7 +88,7 @@ bool cKoral::updateCMDPack(QByteArray &pck)
     return true;
 }
 
-bool cKoral::makeAnswer(tSensorType type)
+bool AvroraSensor::makeAnswer(tSensorType type)
 {
     switch(type){
         case KorallType:
@@ -158,10 +158,10 @@ bool cKoral::makeAnswer(tSensorType type)
     return true;
 }
 
-void cKoral::combineAnswer(QByteArray & pck)
+void AvroraSensor::combineAnswer(QByteArray & pck)
 {
     // расчёт контрольной суммы и формирование конца пакета
-    uint16_t crc = cKoral::crc16(pck, 0, pck.length()-1);
+    uint16_t crc = AvroraSensor::crc16(pck, 0, pck.length()-1);
     pck.append(crc & 0x00FF)
         .append((crc >> 8) & 0x00FF);
     // заменить одинарные символы признака начала пакета на двойные
@@ -179,7 +179,7 @@ void cKoral::combineAnswer(QByteArray & pck)
 // входные данные - массив байт, стартовый номер байта, конечный номер байта
 // для подсчёта.
 // алгоритм основан на данных из сгенерированной таблицы tblcrc[256]
-uint16_t cKoral::crc16(QByteArray arr, int start, int end)
+uint16_t AvroraSensor::crc16(QByteArray arr, int start, int end)
 {
     uint16_t crc = 0;
     for(int i = start; i <= end; ++i)

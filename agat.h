@@ -6,18 +6,18 @@
  *
  ***************************************************/
 
-#ifndef KORAL_H
-#define KORAL_H
+#ifndef AVRORASENSOR_H
+#define AVRORASENSOR_H
 #include <QObject>
 #include <QDebug>
 
 //#define NO_CRC                          // если определено, игнорировать ошибку CRC
 
 namespace agatConst{
-    constexpr char maxAgatNum = 32;     // максимальное количество датчиков в системе (максимальный номер датчика)
+    constexpr unsigned char maxAgatNum = 31;     // максимальное количество датчиков в системе (максимальный номер датчика)
 
-    constexpr int maxChnls = 10;        // максимальное кол-во каналов в ответе
-    constexpr int bytesPerChnl = 4;     // кол-во байт на канал (float)
+    constexpr unsigned int maxChnls = 10;        // максимальное кол-во каналов в ответе
+    constexpr unsigned int bytesPerChnl = 4;     // кол-во байт на канал (float)
 
     constexpr char SOT = '\x1F';        // Start Of Transaction
     constexpr char SCT = '\x24';        // Space Char of Transaction
@@ -131,7 +131,8 @@ enum tSensorType
     VibroType,
     KRUType,
     KorallPlusType,
-    BKSType,
+    BKS14Type,
+    BKS16Type,
     UnknownType,
     NumOfTypes
 };
@@ -183,10 +184,10 @@ static constexpr uint16_t tblcrc[256] = {
         0x6e17,  0x7e36,  0x4e55,  0x5e74,  0x2e93,  0x3eb2,  0x0ed1,  0x1ef0
 };
 
-class cKoral
+class AvroraSensor
 {
 public:
-    cKoral();
+    AvroraSensor();
     char getDst() const {return _packCMD.dstByte;}   // получить адрес запрашиваемого расходомера
     char getSrc() const {return _packCMD.srcByte;}   // получить адрес источника запроса
     char getCmd() const {return _packCMD.cmdByte;}   // получить код команды
@@ -230,4 +231,4 @@ private:
 };
 
 
-#endif // KORAL_H
+#endif // AVRORASENSOR_H

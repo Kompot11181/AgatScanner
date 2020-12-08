@@ -1,7 +1,11 @@
 <RCC>
     <qresource prefix="/">
-        <file>Agat_big_grey.png</file>
-        <file>jk.png</file>
-        <file>search.ico</file>
+        <file>images/Agat_big_grey.png</file>
+        <file>images/jk.png</file>
+        <file>images/copy.png</file>
+        <file>images/send.png</file>
+        <file>images/search.ico</file>
+        <file>images/clear.png</file>
+        <file>images/plot.png</file>
     </qresource>
 </RCC>

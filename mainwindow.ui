@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>920</width>
-    <height>550</height>
+    <height>625</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,8 +20,8 @@
    <string>АГАТ-сканнер</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/List.ico</normaloff>:/List.ico</iconset>
+   <iconset resource="icons.qrc">
+    <normaloff>:/images/search.ico</normaloff>:/images/search.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="layoutDirection">
@@ -31,18 +31,6 @@
     <bool>true</bool>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="leftMargin">
-     <number>4</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>4</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
     <item>
      <layout class="QHBoxLayout" name="hCOMLayout">
       <property name="leftMargin">
@@ -199,6 +187,23 @@
         <property name="text">
          <string>Сканировать</string>
         </property>
+        <property name="icon">
+         <iconset resource="icons.qrc">
+          <normaloff>:/images/search.ico</normaloff>
+          <normalon>:/images/search.ico</normalon>
+          <disabledoff>:/images/search.ico</disabledoff>
+          <disabledon>:/images/search.ico</disabledon>
+          <activeoff>:/images/search.ico</activeoff>
+          <activeon>:/images/search.ico</activeon>
+          <selectedoff>:/images/search.ico</selectedoff>
+          <selectedon>:/images/search.ico</selectedon>:/images/search.ico</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
        </widget>
       </item>
       <item>
@@ -325,8 +330,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>900</width>
-                <height>120</height>
+                <width>890</width>
+                <height>133</height>
                </rect>
               </property>
               <widget class="QWidget" name="verticalLayoutWidget_3">
@@ -554,6 +559,9 @@
                  <height>16</height>
                 </size>
                </property>
+               <property name="shortcut">
+                <string>Esc</string>
+               </property>
                <property name="autoDefault">
                 <bool>false</bool>
                </property>
@@ -679,7 +687,17 @@ p, li { white-space: pre-wrap; }
             <bool>false</bool>
            </property>
            <property name="text">
-            <string>Очистить</string>
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="icons.qrc">
+             <normaloff>:/images/clear.png</normaloff>:/images/clear.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>12</width>
+             <height>12</height>
+            </size>
            </property>
            <property name="default">
             <bool>false</bool>
@@ -698,6 +716,113 @@ p, li { white-space: pre-wrap; }
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="vSendLayout">
+      <property name="leftMargin">
+       <number>4</number>
+      </property>
+      <property name="rightMargin">
+       <number>4</number>
+      </property>
+      <item>
+       <widget class="Line" name="hLine">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="hSendLayout">
+        <item>
+         <widget class="QLabel" name="lSendPack">
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Посылка:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="leOutputData">
+          <property name="minimumSize">
+           <size>
+            <width>240</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Courier New</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
+          <property name="statusTip">
+           <string>Общий формат команды: SOT DST SRC 24 CMD DATA[] CRC EOT</string>
+          </property>
+          <property name="placeholderText">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pbCalcCRC">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>Дополнить посылку стартовым, стоповым байтами, контрольной суммой</string>
+          </property>
+          <property name="text">
+           <string>+SOT +CRC +EOT</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pbSend">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::WheelFocus</enum>
+          </property>
+          <property name="statusTip">
+           <string>Отправить посылку</string>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string> Отправить</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icons.qrc">
+            <normaloff>:/images/send.png</normaloff>:/images/send.png</iconset>
+          </property>
+          <property name="autoDefault">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -736,6 +861,8 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbPort</tabstop>
   <tabstop>pbScan</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

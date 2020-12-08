@@ -40,7 +40,7 @@ cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent)
     spinBoxAddress = new QSpinBox(backwidget);
     spinBoxAddress->setFixedSize(QSize(40, 20));
     spinBoxAddress->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-    spinBoxAddress->setMaximum(31);
+    spinBoxAddress->setMaximum(255);
     horLayout->addWidget(spinBoxAddress);
 
     checkBoxInLoop = new QCheckBox(backwidget);
@@ -53,7 +53,7 @@ cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent)
     leData = new QLineEdit(backwidget);
     leData->setBaseSize(QSize(200, 20));
     leData->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    leData->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    leData->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 //    leData->setLayoutDirection(Qt::LeftToRight);
     leData->setText("");
     leData->setReadOnly(true);
@@ -84,7 +84,7 @@ cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent)
     lAddress->setText(tr("Адрес"));
     lValues->setText(tr("Параметры: "));
 
-    comboBoxType->setStatusTip("Тип датчика. Для 'Коралла-8' с поключённым 'Вибро-1' использовать тип 'Коралл+', '+ массметр', '+ Вибро' с одинаковыми адресами" );
+    comboBoxType->setStatusTip("Тип датчика. Для 'Коралла-8' с поключённым 'Вибро-1' использовать тип 'Коралл+'" );
     spinBoxAddress->setStatusTip("Адрес датчика (0..31)");
     checkBoxInLoop->setStatusTip("Флаг включения датчика в цикл опроса");
     leData->setStatusTip("сырые данные от датчика");
@@ -156,7 +156,24 @@ void cAgatSetting::setType(int type)
         leValues[7]->setFixedWidth(30);
         leValues[8]->setFixedWidth(30);
         break;
-    case BKSType:
+    case BKS14Type:
+        visibleValues = 14;
+        leValues[0]->setFixedWidth(30);
+        leValues[1]->setFixedWidth(30);
+        leValues[2]->setFixedWidth(60);
+        leValues[3]->setFixedWidth(30);
+        leValues[4]->setFixedWidth(60);
+        leValues[5]->setFixedWidth(30);
+        leValues[6]->setFixedWidth(60);
+        leValues[7]->setFixedWidth(30);
+        leValues[8]->setFixedWidth(60);
+        leValues[9]->setFixedWidth(30);
+        leValues[10]->setFixedWidth(60);
+        leValues[11]->setFixedWidth(30);
+        leValues[12]->setFixedWidth(60);
+        leValues[13]->setFixedWidth(30);
+        break;
+    case BKS16Type:
         visibleValues = 14;
         leValues[0]->setFixedWidth(30);
         leValues[1]->setFixedWidth(30);
@@ -201,7 +218,7 @@ void cAgatSetting::setTypeWithLen(int type, int num)
     if (num > MAX_NUM_OF_VALUES) visibleValues = MAX_NUM_OF_VALUES;
     else visibleValues = num;
     switch (_type) {
-    case BKSType:
+    case BKS16Type:
         leValues[0]->setFixedWidth(30);
         leValues[1]->setFixedWidth(30);
         leValues[2]->setFixedWidth(30);
@@ -214,6 +231,7 @@ void cAgatSetting::setTypeWithLen(int type, int num)
         for (i = 0; i < visibleValues; i++)
             leValues[i]->setFixedWidth(30);
         break;
+    case BKS14Type:
     case KRUType:
     case VibroType:
     case KorallType:
@@ -324,9 +342,40 @@ void cAgatSetting::setData(QByteArray &data)
         _values[7] = "0x" + QString::number(data[25] & 0xFF, 16).toUpper();   // Это байт статуса
         _values[8] = "0x" + QString::number(data[26] & 0xFF, 16).toUpper();   // резерв
     }
+    else if (data.length() == 32) //БКС14
+    {
+        if(_type != BKS14Type) setType(BKS14Type);
+        agatChannel param;
+        _values[0] = "0x" + QString::number(data[0] & 0xFF, 16).toUpper();   // общий статус
+        _values[1] = "0x" + QString::number(data[1] & 0xFF, 16).toUpper();   // общая ошибка
+        param.array[3] = data[2]; param.array[2] = data[3];
+        param.array[1] = data[4]; param.array[0] = data[5];
+        _values[2] = QString::number(param.fdata, 'f', 3);          // значение канала 1
+        _values[3] = "0x" + QString::number(data[6] & 0xFF, 16).toUpper();   // статус 1
+        param.array[3] = data[7]; param.array[2] = data[8];
+        param.array[1] = data[9]; param.array[0] = data[10];
+        _values[4] = QString::number(param.fdata, 'f', 3);          // значение канала 2
+        _values[5] = "0x" + QString::number(data[11] & 0xFF, 16).toUpper();   // статус 2
+        param.array[3] = data[12]; param.array[2] = data[13];
+        param.array[1] = data[14]; param.array[0] = data[15];
+        _values[6] = QString::number(param.fdata, 'f', 3);           // значение канала 3
+        _values[7] = "0x" + QString::number(data[16] & 0xFF, 16).toUpper();   // статус 3
+        param.array[3] = data[17]; param.array[2] = data[18];
+        param.array[1] = data[19]; param.array[0] = data[20];
+        _values[8] = QString::number(param.fdata, 'f', 3);           // значение канала 4
+        _values[9] = "0x" + QString::number(data[21] & 0xFF, 16).toUpper();   // статус 4
+        param.array[3] = data[22]; param.array[2] = data[23];
+        param.array[1] = data[24]; param.array[0] = data[25];
+        _values[10] = QString::number(param.fdata, 'f', 3);           // значение канала 5
+        _values[11] = "0x" + QString::number(data[26] & 0xFF, 16).toUpper();   // статус 5
+        param.array[3] = data[27]; param.array[2] = data[28];
+        param.array[1] = data[29]; param.array[0] = data[30];
+        _values[12] = QString::number(param.fdata, 'f', 3);           // значение канала 6
+        _values[13] = "0x" + QString::number(data[31] & 0xFF, 16).toUpper();   // статус 6
+    }
     else if (data.length() == data[0] * 4 + 5) //БКС
     {
-        if(_type != BKSType) setTypeWithLen(BKSType, 4 + (data.length() - 5) / 4);
+        if(_type != BKS16Type) setTypeWithLen(BKS16Type, 4 + (data.length() - 5) / 4);
         agatChannel param;
         _values[0] = "0x" + QString::number(data[1] & 0xFF, 16).toUpper();   // Это байт общей ошибки
         _values[1] = "0x" + QString::number(data[2] & 0xFF, 16).toUpper();   // Это байт ошибки 1-2 канала
@@ -370,7 +419,7 @@ void cAgatSetting::on_CustomContextMenuRequested(QPoint point)
     QMenu * menu = le->createStandardContextMenu();
     // создание нового действия
     menu->setParent(le);
-    QAction * act_copy = new QAction(style()->standardIcon(QStyle::SP_ComputerIcon), tr("Вывести график"), menu->parent());
+    QAction * act_copy = new QAction(QIcon(":/images/plot.png"), tr("Вывести график"), menu->parent());
     // описание сочетания клавиш (только лишь?)
     act_copy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
     // соединение действия с функцией копирования в буфер обмена
