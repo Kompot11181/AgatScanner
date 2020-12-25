@@ -133,6 +133,7 @@ enum tSensorType
     KorallPlusType,
     BKS14Type,
     BKS16Type,
+    CustomType,
     UnknownType,
     NumOfTypes
 };

@@ -39,6 +39,7 @@ public:
                     backwidget->setPalette(pal);
                     backwidget->setAutoFillBackground(true);    // автоматически залить фон цветом
                 }
+        textParser = SensorsParser[UnknownType];
         setType(UnknownType);
     }
     ~cAgatSetting()
@@ -49,6 +50,7 @@ public:
     }
 
     quint8 getAddr() const {return _addr;}
+    quint8 getCommand() const {return _command;}
     tSensorType getType() const {return _type;}
     QString getName() const {return SensorsName[_type];}
     bool getLoop() const {return _loop;}
@@ -60,8 +62,10 @@ signals:
 private:
     quint8 _addr = 0;       // адрес датчика в системе
     tSensorType _type = KorallType;       // тип датчика
+    quint8 _command = 1;    // код команды для опроса
     bool _loop = true;      // флаг участия в периодическом опросе
 
+    QString textParser;         // указание парсера для неизвестного типа устройства
     QStringList _values;        // массив знчений расшифрованных параметров
 
     QWidget * backwidget;
@@ -74,6 +78,7 @@ private:
     QSpinBox * spinBoxAddress;  // "31"        (адрес датчика)
     QCheckBox * checkBoxInLoop; // (галка для вклчения датчика в циклический опрос)
     QLineEdit * leData;         // "0043166666"(данные с датчика)
+    QLineEdit * leParser;       // парсер для неизвестного датчика
     QLabel * lValues;           // "Параметры: "
     QLineEdit * leValues[MAX_NUM_OF_VALUES];        // массив окон для вывода значений
     cGraphWindow * graphWindows[MAX_NUM_OF_VALUES]; // массив указателей на графики значений
@@ -90,7 +95,20 @@ private:
         tr("Коралл+"),
         tr("БКС14"),
         tr("БКС16"),
+        tr("Специальный"),
         tr("Неизвестный"),
+    };
+
+// текст парсера. В начале задаётся главная команда опроса, после точки с запятой размер данных (парсер)
+    const QString SensorsParser[SensorsCount] = {
+        "1;444111",
+        "1;11444",
+        "1;14",
+        "6;444444111",
+        "1;11414141414141",
+        "1;.11114444444444",
+        "1;444111",
+        "1;1111",
     };
 
     const QString SensorNominal[SensorsCount][MAX_NUM_OF_VALUES] = {
@@ -100,6 +118,7 @@ private:
         {tr("м³/час"),  tr("м³"), tr("т/час"), tr("т"), tr("кг/м³"),  tr("°C"), tr("[ERROR]"), tr("[STATUS]"), tr("")},         //Коралл+
         {tr("[ERROR]"), tr("[STATUS]"), tr("[CHANNEL1]"), tr("[STATUS1]"),tr("[CHANNEL2]"), tr("[STATUS2]"),tr("[CHANNEL3]"), tr("[STATUS3]"),tr("[CHANNEL4]"), tr("[STATUS4]"),tr("[CHANNEL5]"), tr("[STATUS5]"),tr("[CHANNEL6]"), tr("[STATUS6]")},  // БКС-14
         {tr("[ERROR]"),  tr("[ERR: CH1, CH2]"), tr("[ERR: CH3, CH4]"), tr("[ERR: CH5, CH6]")},  // БКС-16
+        {tr("") },                                                                        //нестандартный
         {tr("") }                                                                         //неизвестный
     };
 
@@ -163,6 +182,10 @@ private:
          tr("Измеренное значение параметра 5"), tr("Измеренное значение параметра 6"),
          tr("Измеренное значение параметра 7"), tr("Измеренное значение параметра 8"),
          tr("Измеренное значение параметра 9"), tr("Измеренное значение параметра 10") }, //БКС-16
+//Нестандартный
+        {tr("Параметр 1"), tr("Параметр 2"), tr("Параметр 3"), tr("Параметр 4"),
+         tr("Параметр 5"), tr("Параметр 6"), tr("Параметр 7"), tr("Параметр 8"),
+         tr("Параметр 9"), tr("Параметр 10"), tr("Параметр 11"), tr("Параметр 12") },  //нестандартный
 //Неизвестный
         {tr("Параметр 1"), tr("Параметр 2"), tr("Параметр 3"), tr("Параметр 4"),
          tr("Параметр 5"), tr("Параметр 6"), tr("Параметр 7"), tr("Параметр 8"),
@@ -176,8 +199,9 @@ public slots:
     void setLoop(bool looped) {_loop = looped; checkBoxInLoop->setChecked(_loop);}
     void setLoop(void) {_loop = checkBoxInLoop->isChecked(); emit loopChanged(_loop);}
     void setData(QByteArray &data);
+    void setParser(QString parser);
     void updateValues();
-    void restorFromBlink() {leData->setPalette(spinBoxAddress->palette());}
+    void restorFromBlink();
 private slots:
     void on_CustomContextMenuRequested(QPoint);
     void showGraph();

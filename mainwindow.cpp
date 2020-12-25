@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #define PROGRAM_NAME "AGAT-Scanner"
-#define VERSION_NAME "v.0.9"
+#define VERSION_NAME "v.0.95"
 #define PROG_DATE __DATE__
 #define PROG_TIME  __TIME__
 
@@ -187,9 +187,7 @@ void MainWindow::sending()
 // формировать пакет запроса
         request.append(agat_list.at(loopList.at(scanningCount))->getAddr()).append(0x33).append(0x24);
 // проверка на Кораллы с Вибро-1 (Корралл+). Их опрашивать по команде 6.
-        if(agat_list.at(loopList.at(scanningCount))->getType() == KorallPlusType)
-            request.append(0x06);
-        else request.append(0x01);
+        request.append(agat_list.at(loopList.at(scanningCount))->getCommand());
 //дополнить запрос заголовком, окончанием и двойными и символами
         AvroraSensor::combineAnswer(request);
         MainWindow::serialSend(request);

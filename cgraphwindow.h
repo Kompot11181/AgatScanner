@@ -27,10 +27,14 @@ public slots:
 
     void addValue(QString);
 
+private slots:
+    void on_pbCopyToClipboard_clicked();
+
 private:
     Ui::cGraphWindow *ui;
     QCPGraph *_graphic;
     QCustomPlot *_plot;
+    QStringList _data;
 
     void createPlot();
 };

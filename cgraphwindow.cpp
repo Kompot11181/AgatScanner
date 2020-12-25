@@ -37,6 +37,7 @@ void cGraphWindow::changeTooltip(QString str)
 void cGraphWindow::addValue(QString val)
 {
     bool ok;
+    _data.append(val);
     if(val.contains("0x"))
     {
         int value = val.mid(val.lastIndexOf('x') + 1).toInt(&ok, 16);
@@ -97,4 +98,17 @@ void cGraphWindow::createPlot()
     _graphic->setBrush(QBrush(cGraphBrush));
     _graphic->selectionDecorator()->setBrush(QBrush(cGraphSelBrush));
     _graphic->setParent(_plot);
+}
+
+// запись данных буфер обмена в формате строки с разделителями '\n'
+void cGraphWindow::on_pbCopyToClipboard_clicked()
+{
+    if (QClipboard * c = QApplication::clipboard()) {
+        c->setText(_data.join('\n').replace('.', QLocale::system().decimalPoint()));
+    }
+    int len = _data.length();
+    QString suffix = tr("ек");
+    if (len % 10 == 1) suffix = tr("ка");
+    else if ((len % 10 == 2) || (len % 10 == 3) || (len % 10 == 4)) suffix = tr("ки");
+    QMessageBox::information(this, tr("Копирование"), QString(tr("Всего скопировано в буфер обмена:\n %1 точ%2")).arg(len).arg(suffix), QDialogButtonBox::Ok);
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
-    <height>300</height>
+    <width>508</width>
+    <height>342</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,6 +31,12 @@
      </property>
      <item>
       <widget class="QLineEdit" name="lineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -50,14 +56,14 @@
      <item>
       <widget class="QLabel" name="lValue">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
+         <width>120</width>
          <height>20</height>
         </size>
        </property>
@@ -95,14 +101,14 @@
      <item>
       <widget class="QLabel" name="lNominal">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
+         <width>60</width>
          <height>20</height>
         </size>
        </property>
@@ -116,6 +122,32 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pbCopyToClipboard">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>копировать в буфер обмена</string>
+       </property>
+       <property name="statusTip">
+        <string>копировать в буфер обмена</string>
+       </property>
+       <property name="whatsThis">
+        <string>копировать в буфер обмена</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="icons.qrc">
+         <normaloff>:/images/copy.png</normaloff>:/images/copy.png</iconset>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -140,6 +172,10 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>pbCopyToClipboard</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

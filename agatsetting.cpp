@@ -1,6 +1,6 @@
 #include "agatsetting.h"
 
-cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent)
+cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent), textParser("")
 {
     verLayout = new QVBoxLayout(this);
     verLayout->setSpacing(0);
@@ -24,7 +24,7 @@ cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent)
     comboBoxType->setMaxCount(SensorsCount);
     for (int i = 0; i < tSensorType::NumOfTypes; ++i)
         comboBoxType->addItem(SensorsName[i]);
-//    делает пунки меню недоступными
+//    делает пункты меню недоступными
 //    QStandardItemModel* model = (QStandardItemModel*) comboBoxType->model();
 //    model->item(tSensorType::KRUType)->setEnabled(false);
 //    model->item(tSensorType::VibroType)->setEnabled(false);
@@ -58,6 +58,19 @@ cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent)
     leData->setText("");
     leData->setReadOnly(true);
     horLayout->addWidget(leData);
+    leData->setVisible(false);
+
+    leParser = new QLineEdit(backwidget);
+    leParser->setBaseSize(QSize(200, 20));
+    leParser->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    leParser->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+     //setValidator(QRegExpValidator(QRegExp("[0-9a-fA-F]{2};[14]{1,}")).validate(), 0);
+    horLayout->addWidget(leParser);
+    leParser->setEnabled(false);
+    leParser->setVisible(true);
+
+//    QValidator *valid = new QRegExpValidator(QRegExp("[0-9a-fA-F]{2};[.14]{1,}"), backwidget);
+//    leParser->setValidator(valid);
 
     lValues = new QLabel(backwidget);
     lValues->setMinimumSize(QSize(80, 20));
@@ -83,6 +96,9 @@ cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent)
     lNum->setText(tr("1:"));
     lAddress->setText(tr("Адрес"));
     lValues->setText(tr("Параметры: "));
+    leParser->setText(textParser);
+    leParser->setPlaceholderText(tr("Задание для посылки и парсера"));
+    leParser->setStatusTip(tr("Байт команды запроса в формате HEX (0 - FF), разделитель ';', парсер байт: '1'-byte, '4'-float, '.'-ignore byte, '_'-ignore 4 bytes"));
 
     comboBoxType->setStatusTip("Тип датчика. Для 'Коралла-8' с поключённым 'Вибро-1' использовать тип 'Коралл+'" );
     spinBoxAddress->setStatusTip("Адрес датчика (0..31)");
@@ -93,6 +109,7 @@ cAgatSetting::cAgatSetting(QWidget *parent) : QWidget(parent)
     connect(spinBoxAddress, SIGNAL(valueChanged(int)),this, SLOT(setAddr(int)));
 //    connect(checkBoxInLoop, SIGNAL(toggled(bool)),this, SLOT(setLoop(bool)));
     connect(checkBoxInLoop, SIGNAL(released()),this, SLOT(setLoop()));
+    connect(leParser, SIGNAL(textEdited(QString)), this, SLOT(setParser(QString)));
 
     this->setMouseTracking(true);
 }
@@ -102,7 +119,14 @@ void cAgatSetting::blink(int interval, QColor col)
     QPalette pal = leData->palette();
     pal.setColor(QPalette::Base, col);
     leData->setPalette(pal);
+    leParser->setPalette(pal);
     QTimer::singleShot(interval, this, SLOT(restorFromBlink()));
+}
+
+void cAgatSetting::restorFromBlink()
+{
+    leData->setPalette(spinBoxAddress->palette());
+    leParser->setPalette(spinBoxAddress->palette());
 }
 
 void cAgatSetting::mouseMoveEvent(QMouseEvent *event)
@@ -120,78 +144,48 @@ void cAgatSetting::setType(int type)
     comboBoxType->setCurrentIndex(static_cast<int>(_type));
     int i, visibleValues = 0;
     switch (_type) {
-    case KRUType:
-        visibleValues = 2;
-        leValues[0]->setFixedWidth(30);
-        leValues[1]->setFixedWidth(60);
-//        comboBoxType->setEnabled(false);
-        break;
-    case VibroType:
-        visibleValues = 5;
-        leValues[0]->setFixedWidth(30);
-        leValues[1]->setFixedWidth(30);
-        leValues[2]->setFixedWidth(60);
-        leValues[3]->setFixedWidth(60);
-        leValues[4]->setFixedWidth(60);
-//        comboBoxType->setEnabled(false);
-        break;
-    case KorallType:
-        visibleValues = 6;
-        leValues[0]->setFixedWidth(60);
-        leValues[1]->setFixedWidth(60);
-        leValues[2]->setFixedWidth(60);
-        leValues[3]->setFixedWidth(30);
-        leValues[4]->setFixedWidth(30);
-        leValues[5]->setFixedWidth(30);
-        break;
-    case KorallPlusType:
-        visibleValues = 9;
-        leValues[0]->setFixedWidth(60);
-        leValues[1]->setFixedWidth(60);
-        leValues[2]->setFixedWidth(60);
-        leValues[3]->setFixedWidth(60);
-        leValues[4]->setFixedWidth(60);
-        leValues[5]->setFixedWidth(60);
-        leValues[6]->setFixedWidth(30);
-        leValues[7]->setFixedWidth(30);
-        leValues[8]->setFixedWidth(30);
-        break;
-    case BKS14Type:
-        visibleValues = 14;
-        leValues[0]->setFixedWidth(30);
-        leValues[1]->setFixedWidth(30);
-        leValues[2]->setFixedWidth(60);
-        leValues[3]->setFixedWidth(30);
-        leValues[4]->setFixedWidth(60);
-        leValues[5]->setFixedWidth(30);
-        leValues[6]->setFixedWidth(60);
-        leValues[7]->setFixedWidth(30);
-        leValues[8]->setFixedWidth(60);
-        leValues[9]->setFixedWidth(30);
-        leValues[10]->setFixedWidth(60);
-        leValues[11]->setFixedWidth(30);
-        leValues[12]->setFixedWidth(60);
-        leValues[13]->setFixedWidth(30);
-        break;
-    case BKS16Type:
-        visibleValues = 14;
-        leValues[0]->setFixedWidth(30);
-        leValues[1]->setFixedWidth(30);
-        leValues[2]->setFixedWidth(30);
-        leValues[3]->setFixedWidth(30);
-        leValues[4]->setFixedWidth(60);
-        leValues[5]->setFixedWidth(60);
-        leValues[6]->setFixedWidth(60);
-        leValues[7]->setFixedWidth(60);
-        leValues[8]->setFixedWidth(60);
-        leValues[9]->setFixedWidth(60);
-        break;
-    default:
-        for (i = 0; i < 4; i++)
-            leValues[i]->setFixedWidth(30);
-        visibleValues = 4;
-        break;
+        case KRUType:
+        case VibroType:
+        case KorallType:
+        case KorallPlusType:
+        case BKS14Type:
+        {
+            textParser = SensorsParser[_type];
+            leParser->setEnabled(true);
+            break;
+        }
+        case BKS16Type:
+        {
+            textParser = SensorsParser[BKS16Type];
+            leParser->setEnabled(true);
+            break;
+        }
+        case CustomType:
+        {
+            leParser->setEnabled(true);
+            break;
+        }
+        default:
+        {
+            textParser = SensorsParser[UnknownType];
+            leParser->setEnabled(true);
+            break;
+        }
     }
+// дешифровать текст парсера
+    leParser->setText(textParser);
+    QStringList sl = textParser.split(QChar(';'));
+    _command = QString(sl.at(0)).toInt(nullptr, 16);
+    QString pars = sl.at(1);
+    visibleValues = 0;
+    for (int i = 0; i < pars.length(); i++) {
+        if (pars[i] == '1') {
+            leValues[visibleValues++]->setFixedWidth(30);
+        } else if (pars[i] == '4') {
+            leValues[visibleValues++]->setFixedWidth(60);
+        }
+    }
+// показать или скрыть лишние параметры
     for(i = 0; i < visibleValues; i++) {
         // восстановить шрифт
         leValues[i]->setFont(leData->font());
@@ -274,7 +268,32 @@ void cAgatSetting::setData(QByteArray &data)
 {
     leData->setText(static_cast<QString>(data.toHex()).toUpper());
     leData->setToolTip(static_cast<QString>(data.toHex()).toUpper());
-    if (data.length() == 5) //КРУ-1
+    if (_type == CustomType) {
+        QStringList sl = textParser.split(QChar(';'));
+        QString pars = sl.at(1);
+        int numOfValue = 0, u = 0;
+        for (int i = 0; i < pars.length(); i++) {
+            if (pars[i] == '1') {           // нужно принять 1 байт данных char
+                if( (u+1) <= data.length()) {
+                    _values[numOfValue++] = "0x" + QString::number(data[u++] & 0xFF, 16).toUpper();
+                } else break;
+            } else if (pars[i] == '4') {    // нужно принять 4 байта данных float
+                if( (u+4) <= data.length()) {
+                    agatChannel param;
+                    param.array[3] = data[u++];
+                    param.array[2] = data[u++];
+                    param.array[1] = data[u++];
+                    param.array[0] = data[u++];
+                    _values[numOfValue++] = QString::number(param.fdata, 'f', 3);
+                }
+            } else if (pars[i] == '.') {    // нужно проигнорировать 1 байт данных
+                ++u;
+            } else if (pars[i] == '_') {    // нужно проигнорировать 4 байта данных
+                u += 4;
+            }
+        }
+    }
+    else if (data.length() == 5) //КРУ-1
     {
         if(_type != KRUType) setType(KRUType);
         _values[0] = "0x" + QString::number(data[0] & 0xFF, 16).toUpper();   // Это статус
@@ -402,15 +421,41 @@ void cAgatSetting::setData(QByteArray &data)
     updateValues();
 }
 
+// задать строку парсера в соответствии с пришедщей строкой
+void cAgatSetting::setParser(QString parser)
+{
+    // разложить строку парсера
+    QStringList p = parser.split(QChar(';'));
+    // если нет двух составляющих, считать, что
+    // команда запроса (первая часть текста парсера) равна 0x01
+    if (p.length() < 2) {
+        p.append(p.at(0));
+        p[0] = "1";
+    }
+    p[0] = QString::number(p.at(0).toInt(nullptr, 16), 16).right(2).toUpper();
+    p[1] = QString(p.at(1)).replace(QRegExp("[^._14]"), "");  // удалить все незначащие символы
+    QString pars = QString("%1;%2").arg(p.at(0)).arg(p.at(1));
+    textParser = pars;
+    setType(_type);
+}
+
 void cAgatSetting::updateValues()
 {
     for(int i = 0; i < MAX_NUM_OF_VALUES; i++)
     {
+        if (leValues[i]->text() == _values[i]) {
+            leValues[i]->setPalette(spinBoxAddress->palette()); // если данные не менялись, то стандартная палитра
+        } else {
+            QPalette pal = leValues[i]->palette();              // если данные менялись, то
+            pal.setColor(QPalette::Text, Qt::darkRed);              // цвет текста сделать красным
+            leValues[i]->setPalette(pal);
+        }
         leValues[i]->setText(_values[i]);
         leValues[i]->setStatusTip(_values[i]);
         emit leValues[i]->textEdited(_values[i]);
     }
 }
+
 // вывод контекстного меню
 void cAgatSetting::on_CustomContextMenuRequested(QPoint point)
 {

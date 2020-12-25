@@ -67,7 +67,7 @@ private:
     Ui::MainWindow *ui;
     SgComPort *com;
     QTimer timer;
-    unsigned int scanningCount;
+    int scanningCount;
     bool loop_mode;                 // флаг режима циклического опроса определённых датчиков
     bool send_user_pack;            // флаг необходимости послыки введённого пользотелей запроса
     void initSerial();
