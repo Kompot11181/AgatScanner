@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>508</width>
-    <height>342</height>
+    <width>490</width>
+    <height>357</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,6 +15,9 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::CustomContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>График изменения параметра</string>
@@ -29,6 +32,37 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
+     <item>
+      <widget class="QPushButton" name="pbDelete">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>28</width>
+         <height>23</height>
+        </size>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Очистить график</string>
+       </property>
+       <property name="statusTip">
+        <string>Очистить график</string>
+       </property>
+       <property name="whatsThis">
+        <string>Очистить график</string>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QLineEdit" name="lineEdit">
        <property name="sizePolicy">
@@ -126,6 +160,19 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pbSelect">
+       <property name="maximumSize">
+        <size>
+         <width>28</width>
+         <height>23</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Sel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pbCopyToClipboard">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
@@ -162,6 +209,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::PreventContextMenu</enum>
        </property>
        <property name="toolTipDuration">
         <number>300</number>

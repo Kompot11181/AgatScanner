@@ -30,12 +30,28 @@ public slots:
 private slots:
     void on_pbCopyToClipboard_clicked();
 
-private:
-    Ui::cGraphWindow *ui;
-    QCPGraph *_graphic;
-    QCustomPlot *_plot;
-    QStringList _data;
+    void on_pbDelete_clicked();
 
+    void on_cGraphWindow_customContextMenuRequested(const QPoint &pos);
+
+    void on_pbSelect_clicked();
+
+    void fix_axisX(bool);
+    void fix_axisY(bool);
+
+private:
+    Ui::cGraphWindow *ui;               // интерфейс пользователя
+    QCPGraph *_graphic;                 // график изменения параметра
+    QCustomPlot *_plot;                 // окно отображения графика
+    QStringList _data;                  // массив данных изменения параметра
+    bool _isRescalableAxisX;            // флаг автонастройки шкалы оси X
+    bool _isRescalableAxisY;            // флаг автонастройки шкалы оси Y
+
+    QAction * actSelect;                // действие: выделение графика
+    QAction * actAxisX;                 // действие: изменение флага автонастройки шкалы X
+    QAction * actAxisY;                 // действие: изменение флага автонастройки шкалы Y
+    QAction * actCopy;                  // действие: копирование данных в буфер обмена
+    QAction * actClear;                 // действие: очистка графика и накопленных данных
     void createPlot();
 };
 

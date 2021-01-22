@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #define PROGRAM_NAME "AGAT-Scanner"
-#define VERSION_NAME "v.0.95"
+#define VERSION_NAME "v.0.97"
 #define PROG_DATE __DATE__
 #define PROG_TIME  __TIME__
 
@@ -296,10 +296,11 @@ void MainWindow::serialReceive(QByteArray pck)
                     ui->teInputData->append(logOutStr);
                 }
                 pack = onePack + pack;
+                if (pack.length() > 255) pack.clear();  // очистить буфер (включая возможные неразобранные пакеты) при превышении буфера (FIX IT!)
                 return;
             }
         };
-        pack = "";  // очисить буфер (включая возможные неразоранные пакеты)
+        pack.clear();  // очисить буфер (включая возможные неразоранные пакеты)
         ui->statusBar->showMessage(onePack.toHex().toUpper(), 1000);
 
 // проверка на опрашиваемые Кораллы
