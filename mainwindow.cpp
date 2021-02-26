@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #define PROGRAM_NAME "AGAT-Scanner"
-#define VERSION_NAME "v.0.97"
+#define VERSION_NAME "v.0.98"
 #define PROG_DATE __DATE__
 #define PROG_TIME  __TIME__
 
@@ -123,6 +123,7 @@ void MainWindow::on_pbScan_clicked()
 void MainWindow::on_pbStart_clicked()
 {
     loop_mode = true;                           // включить опрос
+    ui->pbStart->setChecked(true);
     scanningCount = 0;                          // с начала цикла
     timer.start();                              // начать опрос
     ui->pbScan->setEnabled(false);
@@ -132,6 +133,7 @@ void MainWindow::on_pbStart_clicked()
 void MainWindow::on_pbStop_clicked()
 {
     loop_mode = false;                          // остановка опроса
+    ui->pbStart->setChecked(false);
     scanningCount = agatConst::maxAgatNum + 1; // остановка сканирования
 }
 
@@ -169,6 +171,7 @@ void MainWindow::sending()
                 ui->teInputData->append("<font color=""red"">Датчики не обнаружены. Попробуйте сканировать сеть заново</font>");
             scanningCount = agatConst::maxAgatNum;
             loop_mode = false;
+            ui->pbStart->setChecked(false);
             return;
         }
         // определить список датчиков для опроса (с порядковыми номерами датчиков для опроса)
@@ -180,6 +183,7 @@ void MainWindow::sending()
             ui->teInputData->append("<font color=""red"">Список опроса пуст. Выделите датчики для циклического опроса и попробуйте снова</font>");
             scanningCount = agatConst::maxAgatNum;
             loop_mode = false;
+            ui->pbStart->setChecked(false);
             return;
         }
         // обеспечить зацикленность опроса датчиков

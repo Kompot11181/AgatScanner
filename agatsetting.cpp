@@ -505,6 +505,8 @@ void cAgatSetting::showGraph()
                           .arg(num_of_value + 1) );
         // связываем обновление параметра в поле ввода с окном вывода графика
         connect (le, SIGNAL(textEdited(QString)), cgw, SLOT(addValue(QString)));
+        connect (cgw, SIGNAL(needToClearAll()), this, SLOT(startToClearPlots()));
+        connect (this, SIGNAL(clearPlots()), cgw, SLOT(clear()));
         // добавляем первое значение
         emit le->textEdited(le->text());
         // конкретизируем номинал параметра и его описание по хинту
@@ -518,4 +520,11 @@ void cAgatSetting::showGraph()
     }
 // показать окно
     cgw->show();
+}
+
+void cAgatSetting::startToClearPlots()
+{
+    if(QMessageBox::warning(this, tr("Очистка данных"), QString(tr("Вы уверены, что хотите очистить все графики\n для данного датчика и удалить всю накопленную информацию?")), QMessageBox::Yes | QMessageBox::No, QMessageBox::No)
+                            != QMessageBox::Yes) return;
+    emit clearPlots();
 }

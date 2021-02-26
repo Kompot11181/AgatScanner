@@ -7,5 +7,8 @@
         <file>images/search.ico</file>
         <file>images/clear.png</file>
         <file>images/plot.png</file>
+        <file>images/paste.png</file>
+        <file>images/new.png</file>
+        <file>images/new_all.png</file>
     </qresource>
 </RCC>

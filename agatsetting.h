@@ -58,6 +58,7 @@ public:
 
 signals:
     void loopChanged(bool);     // срабатывает, когда изменяется флаг опроса
+    void clearPlots();          // подключён к слотам очистки накопленных данных для каждого из графиков
 
 private:
     quint8 _addr = 0;       // адрес датчика в системе
@@ -205,6 +206,7 @@ public slots:
 private slots:
     void on_CustomContextMenuRequested(QPoint);
     void showGraph();
+    void startToClearPlots();
 protected:
     void mouseMoveEvent(QMouseEvent *);
 };
